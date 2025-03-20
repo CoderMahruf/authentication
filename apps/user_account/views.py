@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .mixins import LogoutRequiredMixin
-from .forms import LoginForm 
+from .forms import LoginForm,UserRegistrationForm
 # Create your views here.
 
 @method_decorator(never_cache, name='dispatch')
@@ -40,3 +40,13 @@ class Logout(generic.View):
     def get(self,*args,**kwargs):
         logout(self.request)
         return redirect('login')
+
+@method_decorator(never_cache, name='dispatch')
+class Registration(LogoutRequiredMixin,generic.CreateView):
+    template_name = 'user_account/registration.html'
+    form_class = UserRegistrationForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self,form):
+        messages.success(self.request,"Registration Successfull !")
+        return super().form_valid(form) 
